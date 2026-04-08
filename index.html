@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مكتب رواد البدر للخدمات المتكاملة</title>
+    <style>
+        :root { --primary: #004d61; --secondary: #ff8c00; --bg: #f4f7f6; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg); margin: 0; padding: 20px; line-height: 1.6; }
+        .container { max-width: 600px; margin: auto; background: white; padding: 40px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); border-top: 8px solid var(--secondary); }
+        h2 { color: var(--primary); text-align: center; margin-bottom: 30px; font-size: 24px; }
+        label { display: block; margin-top: 15px; font-weight: 600; color: #333; }
+        input, select, textarea { width: 100%; padding: 12px; margin-top: 8px; border: 2px solid #eee; border-radius: 10px; box-sizing: border-box; font-size: 16px; transition: 0.3s; }
+        input:focus, select:focus, textarea:focus { border-color: var(--secondary); outline: none; background: #fffcf9; }
+        textarea { height: 100px; }
+        .btn { background: var(--primary); color: white; border: none; padding: 18px; width: 100%; border-radius: 10px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 30px; transition: 0.4s; box-shadow: 0 5px 15px rgba(0,77,97,0.3); }
+        .btn:hover { background: #003644; transform: translateY(-2px); }
+        .loading { display: none; text-align: center; color: var(--primary); font-weight: bold; margin-top: 20px; }
+        .success-msg { display: none; background: #d4edda; color: #155724; padding: 15px; border-radius: 10px; text-align: center; margin-top: 20px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>📝 تسجيل طلب خدمة جديدة معا مكتب:رواد البدر للسفريات والسياحة </h2>
+    <form id="orderForm">
+        <label>الاسم الكامل</label>
+        <input type="text" id="name" required placeholder="أدخل اسمك كما في الهوية">
+
+        <label>رقم الجوال (واتساب)</label>
+        <input type="tel" id="phone" required placeholder="أدخل رقمك مع مفتاح الدولة">
+
+        <label>الخدمة المطلوبة</label>
+        <select id="serviceSelected" required>
+            <option value="">-- اختر من القائمة --</option>
+            <optgroup label="الحج والعمرة">
+                <option value="حجز عمرة">حجز عمرة</option>
+                <option value="برامج الحج">برامج الحج</option>
+            </optgroup>
+            <optgroup label="التأشيرات والجوازات">
+                <option value="تأشيرة سياحة">تأشيرة سياحة</option>
+                <option value="تأشيرة عمل">تأشيرة عمل</option>
+                <option value="تجديد جواز سفر">تجديد/استخراج جواز سفر</option>
+            </optgroup>
+            <optgroup label="المعاملات والوثائق">
+                <option value="تجديد شهادة ميلاد">تجديد شهادة ميلاد</option>
+                <option value="مطابقة وثائق/كرت عائلي">مطابقة وثائق / كرت عائلي</option>
+                <option value="رخصة قيادة">رخصة قيادة</option>
+                <option value="مصادقة غرفة تجارية">مصادقة الغرفة التجارية</option>
+            </optgroup>
+            <option value="خدمة أخرى">خدمة أخرى (اكتب في الملاحظات)</option>
+        </select>
+
+        <label>رقم الهوية / الجواز</label>
+        <input type="text" id="idNumber" placeholder="رقم الهوية أو الجواز إن وجد">
+
+        <label>ملاحظات إضافية</label>
+        <textarea id="notes" placeholder="اكتب أي تفاصيل تريد إضافتها..."></textarea>
+
+        <button type="submit" class="btn" id="submitBtn">إرسال الطلب الآن</button>
+        
+        <div id="loader" class="loading">⏳ جاري إرسال بياناتك بأمان...</div>
+        <div id="successBox" class="success-msg">✅ تم استلام طلبك بنجاح! سنتواصل معك عبر الواتساب قريباً.</div>
+    </form>
+</div>
+
+<script>
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbz3fw36gh4PC_X8sWtYNTMNhwL9kXupZFMsd9M93p7frpch9cXEX7w8OeAJVRX9JQQdSw/exec';
+
+    document.getElementById('orderForm').addEventListener('submit', e => {
+        e.preventDefault();
+        const btn = document.getElementById('submitBtn');
+        const loader = document.getElementById('loader');
+        const successBox = document.getElementById('successBox');
+        
+        btn.disabled = true;
+        btn.style.opacity = '0.5';
+        loader.style.display = 'block';
+        successBox.style.display = 'none';
+
+        const data = {
+            name: document.getElementById('name').value,
+            phone: document.getElementById('phone').value,
+            service: document.getElementById('serviceSelected').value,
+            idNumber: document.getElementById('idNumber').value,
+            notes: document.getElementById('notes').value
+        };
+        
+        fetch(scriptURL, { 
+            method: 'POST', 
+            mode: 'no-cors',
+            body: JSON.stringify(data)
+        })
+        .then(() => {
+            loader.style.display = 'none';
+            successBox.style.display = 'block';
+            document.getElementById('orderForm').reset();
+            btn.disabled = false;
+            btn.style.opacity = '1';
+            
+            // توجيه تلقائي بسيط بعد النجاح (اختياري)
+            setTimeout(() => { successBox.style.display = 'none'; }, 5000);
+        })
+        .catch(err => {
+            alert('عذراً، حدث خطأ في الاتصال. يرجى المحاولة لاحقاً.');
+            console.error(err);
+            btn.disabled = false;
+            btn.style.opacity = '1';
+            loader.style.display = 'none';
+        });
+    });
+</script>
+
+</body>
+</html>
