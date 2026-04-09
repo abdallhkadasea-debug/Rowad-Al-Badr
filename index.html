@@ -51,6 +51,19 @@
 
 <script>
     const scriptURL = 'https://script.google.com/macros/s/AKfycbz3fw36gh4PC_X8sWtYNTMNhwL9kXupZFMsd9M93p7frpch9cXEX7w8OeAJVRX9JQQdSw/exec';
+  // كود جلب الخدمات للموقع
+  fetch(scriptURL + '?getServices=1')
+    .then(res => res.json())
+    .then(data => {
+      const select = document.getElementById('serviceSelected');
+      select.innerHTML = '<option value="">-- اختر من القائمة --</option>';
+      data.forEach(row => {
+        const option = document.getElementById('option');
+        option.value = row[0];
+        option.textContent = row[0];
+        select.appendChild(option);
+      });
+    });
 
     document.getElementById('orderForm').addEventListener('submit', e => {
         e.preventDefault();
